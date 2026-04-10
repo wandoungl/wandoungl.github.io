@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<!-- saved from url=(0048)file:///Users/guilinniu/Downloads/sbti-test.html -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SBTI 炒股人格测试</title>
+<link href="./SBTI 炒股人格测试_files/css2" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --card: #1a1a28;
+    --border: #2a2a40;
+    --green: #00ff88;
+    --red: #ff3355;
+    --yellow: #ffd700;
+    --cyan: #00d4ff;
+    --text: #e8e8f0;
+    --muted: #6b6b88;
+    --glow-green: 0 0 20px rgba(0,255,136,0.4);
+    --glow-red: 0 0 20px rgba(255,51,85,0.4);
+    --glow-cyan: 0 0 20px rgba(0,212,255,0.4);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans SC', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Background grid effect */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Floating orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+    animation: float 8s ease-in-out infinite;
+  }
+  .orb-1 {
+    width: 300px; height: 300px;
+    background: rgba(0,255,136,0.06);
+    top: -100px; left: -100px;
+    animation-delay: 0s;
+  }
+  .orb-2 {
+    width: 250px; height: 250px;
+    background: rgba(255,51,85,0.06);
+    bottom: -80px; right: -80px;
+    animation-delay: -4s;
+  }
+  @keyframes float {
+    0%, 100% { transform: translate(0,0); }
+    50% { transform: translate(20px, -20px); }
+  }
+
+  .container {
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── SCREENS ── */
+  .screen {
+    display: none;
+    animation: fadeSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+  .screen.active { display: block; }
+
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── HOME ── */
+  .home-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .home-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--red), var(--green));
+  }
+
+  .ticker-bar {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .ticker-inner {
+    display: inline-block;
+    animation: ticker 18s linear infinite;
+  }
+  @keyframes ticker {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+  .tick-up { color: var(--green); }
+  .tick-down { color: var(--red); }
+
+  .logo-badge {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--green);
+    background: rgba(0,255,136,0.08);
+    border: 1px solid rgba(0,255,136,0.3);
+    border-radius: 6px;
+    padding: 4px 12px;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+
+  .home-title {
+    font-size: 32px;
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #fff 40%, var(--green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .home-subtitle {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 32px;
+  }
+  .home-subtitle em {
+    color: var(--yellow);
+    font-style: normal;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .stat-box {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 8px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green);
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--green), #00cc6a);
+    color: #000;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    box-shadow: var(--glow-green);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(0,255,136,0.6);
+  }
+  .btn-primary:active { transform: scale(0.97); }
+
+  .disclaimer {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 16px;
+  }
+
+  /* ── QUIZ ── */
+  .quiz-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .q-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 2px;
+  }
+  .q-progress {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--cyan);
+    font-weight: 700;
+  }
+
+  .progress-track {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cyan), var(--green));
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(0.16,1,0.3,1);
+    box-shadow: 0 0 8px rgba(0,212,255,0.6);
+  }
+
+  .q-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px 24px;
+    margin-bottom: 16px;
+  }
+  .q-dimension {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+  .q-text {
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  .options-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .opt-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 20px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    color: var(--text);
+    font-family: 'Noto Sans SC', sans-serif;
+  }
+  .opt-btn:hover {
+    border-color: var(--cyan);
+    background: rgba(0,212,255,0.05);
+    transform: translateX(4px);
+  }
+  .opt-btn:active {
+    transform: scale(0.97);
+  }
+  .opt-btn.selected-A {
+    border-color: var(--red);
+    background: rgba(255,51,85,0.08);
+    box-shadow: var(--glow-red);
+  }
+  .opt-btn.selected-B {
+    border-color: var(--green);
+    background: rgba(0,255,136,0.08);
+    box-shadow: var(--glow-green);
+  }
+  .opt-letter {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    background: var(--border);
+    border-radius: 6px;
+    padding: 2px 7px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: all 0.2s;
+  }
+  .selected-A .opt-letter { color: var(--red); background: rgba(255,51,85,0.2); }
+  .selected-B .opt-letter { color: var(--green); background: rgba(0,255,136,0.2); }
+  .opt-text {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── LOADING ── */
+  .loading-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 60px 32px;
+    text-align: center;
+  }
+  .loading-icon {
+    font-size: 48px;
+    margin-bottom: 24px;
+    animation: spin-wobble 1s ease-in-out infinite;
+  }
+  @keyframes spin-wobble {
+    0%, 100% { transform: rotate(-10deg) scale(1); }
+    50% { transform: rotate(10deg) scale(1.1); }
+  }
+  .loading-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .loading-sub {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .loading-dots {
+    display: inline-flex;
+    gap: 6px;
+    margin-top: 28px;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: blink 1.2s ease-in-out infinite;
+  }
+  .dot:nth-child(2) { animation-delay: 0.2s; background: var(--yellow); }
+  .dot:nth-child(3) { animation-delay: 0.4s; background: var(--red); }
+  @keyframes blink {
+    0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1.2); }
+  }
+
+  /* ── RESULT ── */
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 36px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .result-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--green), var(--cyan), var(--red));
+  }
+
+  .result-top-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+  }
+
+  .result-type {
+    font-family: 'Space Mono', monospace;
+    font-size: 56px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    background: linear-gradient(135deg, var(--green), var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+    filter: drop-shadow(0 0 20px rgba(0,255,136,0.4));
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  @keyframes pulse-glow {
+    0%, 100% { filter: drop-shadow(0 0 15px rgba(0,255,136,0.3)); }
+    50% { filter: drop-shadow(0 0 30px rgba(0,255,136,0.7)); }
+  }
+
+  .result-title {
+    font-size: 20px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    color: var(--yellow);
+  }
+
+  .result-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 20px 0;
+  }
+
+  .result-comment {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    text-align: left;
+    position: relative;
+  }
+  .result-comment::before {
+    content: '"';
+    font-size: 48px;
+    color: var(--border);
+    position: absolute;
+    top: -8px; left: 12px;
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+
+  .result-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 20px 0;
+  }
+  .r-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+  }
+  .r-stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .r-stat-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .val-red { color: var(--red); }
+  .val-green { color: var(--green); }
+  .val-yellow { color: var(--yellow); }
+  .val-cyan { color: var(--cyan); }
+
+  .share-hint {
+    font-size: 12px;
+    color: var(--muted);
+    background: rgba(255,215,0,0.06);
+    border: 1px dashed rgba(255,215,0,0.3);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin: 16px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-secondary {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    color: var(--text);
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 10px;
+  }
+  .btn-secondary:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    background: rgba(0,212,255,0.05);
+  }
+
+  /* ── LETTER REVEAL ANIMATION ── */
+  @keyframes letterPop {
+    0% { opacity: 0; transform: translateY(20px) scale(0.5); }
+    60% { transform: translateY(-5px) scale(1.2); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .letter-animate {
+    display: inline-block;
+    animation: letterPop 0.5s cubic-bezier(0.16,1,0.3,1) both;
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="container">
+
+  <!-- HOME -->
+  <div id="home" class="screen active">
+    <div class="home-card">
+      <div class="ticker-bar">
+        <span class="ticker-inner">
+          沪指 <span class="tick-down">▼ 2.31%</span> &nbsp;｜&nbsp;
+          茅台 <span class="tick-up">▲ 5.88%</span> &nbsp;｜&nbsp;
+          比亚迪 <span class="tick-up">▲ 1.07%</span> &nbsp;｜&nbsp;
+          你的持仓 <span class="tick-down">▼ 13.57%</span> &nbsp;｜&nbsp;
+          你的信心 <span class="tick-down">▼ 99.99%</span>
+        </span>
+      </div>
+      <div class="logo-badge">SBTI™ SYSTEM</div>
+      <h1 class="home-title">炒股人格<br>测试</h1>
+      <p class="home-subtitle">
+        4道灵魂拷问，精准定位你的<em>炒股基因</em>。<br>
+        科学严谨，亏损自负。
+      </p>
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-num">16</div>
+          <div class="stat-label">人格类型</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">4</div>
+          <div class="stat-label">维度测评</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">100%</div>
+          <div class="stat-label">亏损风险</div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="startQuiz()">🚀 开始测试</button>
+      <p class="disclaimer">* 本测试纯属娱乐，不构成任何投资建议</p>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz" class="screen">
+    <div class="quiz-header">
+      <span class="q-label">SBTI™ TEST</span>
+      <span class="q-progress" id="q-progress">1 / 4</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="q-card">
+      <div class="q-dimension" id="q-dimension">维度 1 · 决策风格</div>
+      <div class="q-text" id="q-text">题目加载中...</div>
+    </div>
+    <div class="options-wrap" id="options-wrap">
+      <button class="opt-btn" id="opt-a" onclick="answer(&#39;A&#39;)">
+        <span class="opt-letter">A</span>
+        <span class="opt-text" id="opt-a-text"></span>
+      </button>
+      <button class="opt-btn" id="opt-b" onclick="answer(&#39;B&#39;)">
+        <span class="opt-letter">B</span>
+        <span class="opt-text" id="opt-b-text"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div id="loading" class="screen">
+    <div class="loading-card">
+      <div class="loading-icon">📊</div>
+      <div class="loading-title" id="loading-text">正在通过 AI 测算你的账户余额...</div>
+      <div class="loading-sub" id="loading-sub">请稍候，系统正在分析你<br>亏损的深层次原因</div>
+      <div class="loading-dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result" class="screen">
+    <div class="result-card">
+      <div class="result-top-label">YOUR SBTI™ RESULT</div>
+      <div class="result-type" id="result-type">----</div>
+      <div class="result-title" id="result-title">称号加载中</div>
+      <div class="result-divider"></div>
+      <div class="result-comment" id="result-comment">评语加载中...</div>
+      <div class="result-stats" id="result-stats"></div>
+      <div class="share-hint">📸 &nbsp;截图发朋友圈，看看你的股友是哪种人格！</div>
+      <button class="btn-primary" onclick="restart()">🔄 重新测试</button>
+      <button class="btn-secondary" onclick="shareResult()">分享给朋友</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const questions = [
+  {
+    dimension: '维度 1 · 决策风格',
+    text: '你非常看好的一只股票突然暴跌了10%，你的第一反应是？',
+    a: { text: '机会来了！满仓干！把预备金全打进去！', key: 'S' },
+    b: { text: '卧倒装死，逢低慢慢加仓摊薄成本。', key: 'B' }
+  },
+  {
+    dimension: '维度 2 · 选股依据',
+    text: '你买入一只股票最主要的依据是什么？',
+    a: { text: '炒股群群友推荐、大V带单、或者内幕消息。', key: 'T' },
+    b: { text: '严格看K线、MACD、布林带等技术指标，相信图表说明一切。', key: 'I' }
+  },
+  {
+    dimension: '维度 3 · 持仓周期',
+    text: '你通常持有一只股票多久？',
+    a: { text: '绝不过夜！或者最多拿两三天，赚个盒饭钱就跑。', key: 'D' },
+    b: { text: '做时间的朋友，只要基本面没变，我能拿到天荒地老。', key: 'L' }
+  },
+  {
+    dimension: '维度 4 · 情绪管理',
+    text: '朋友买的妖股天天涨停，你手里拿着银行股一动不动，你会？',
+    a: { text: '气到睡不着觉，第二天立刻割肉去追妖股。', key: 'E' },
+    b: { text: '内心毫无波澜，甚至有点想笑，这钱注定不是我的。', key: 'R' }
+  }
+];
+
+const results = {
+  STDE: {
+    title: '被收割的究极绿韭菜 🌿',
+    comment: '你就是主力的提款机，游资的好兄弟！追涨杀跌你是专业的，山顶站岗你是第一的。每次大涨都冲进去，每次大跌都割出来——感谢你对A股流动性的无私贡献。',
+    stats: [
+      { label: '亏损概率', val: '99.9%', cls: 'val-red' },
+      { label: '情绪指数', val: '爆炸', cls: 'val-red' },
+      { label: '持仓心态', val: '极度恐慌', cls: 'val-red' },
+      { label: '韭菜等级', val: 'SSS+', cls: 'val-green' }
+    ]
+  },
+  BILD: {
+    title: '华尔街冷面佛 🧘',
+    comment: '泰山崩于前而色不变，哪怕跌去90%，你依然在冷静地画着斐波那契回撤线。你的字典里没有"割肉"，只有"等待"。问题是……你确定你等得来那一天吗？',
+    stats: [
+      { label: '心态稳定度', val: '钻石', cls: 'val-cyan' },
+      { label: '技术水平', val: '满格', cls: 'val-green' },
+      { label: '情绪指数', val: '佛系', cls: 'val-cyan' },
+      { label: '套牢深度', val: '马里亚纳', cls: 'val-red' }
+    ]
+  },
+  STLR: {
+    title: '被迫做价值投资的套牢大户 😭',
+    comment: '本来只想做个短线，结果一不小心炒成了股东。你的理智全靠被套出来的顿悟。每次解套都发誓长期持有，一涨就跑——你的人生哲学叫做"涨了就卖，跌了就熬"。',
+    stats: [
+      { label: '套牢时长', val: '∞ 天', cls: 'val-red' },
+      { label: '本金状态', val: '冻结中', cls: 'val-yellow' },
+      { label: '反思次数', val: '1000+', cls: 'val-cyan' },
+      { label: '下次还来', val: '必然的', cls: 'val-green' }
+    ]
+  },
+  BIDE: {
+    title: '每天都在回本路上的波段海王 🌊',
+    comment: '一顿操作猛如虎，一看收益负十五。懂得很多大道理，依然过不好这一生。你用技术分析的工具，配上情绪化的执行——这是一种非常独特的天赋，叫做"高买低卖"。',
+    stats: [
+      { label: '操作频率', val: '极高', cls: 'val-yellow' },
+      { label: '手续费贡献', val: '大户级', cls: 'val-red' },
+      { label: '回本进度', val: '0%', cls: 'val-red' },
+      { label: '波段成功率', val: '也许吧', cls: 'val-muted' }
+    ]
+  }
+};
+
+// Fallback mapping for all 16 types
+const typeMap = {
+  STDE: 'STDE', STDR: 'STDE', STLE: 'STDE', STLR: 'STLR',
+  SIDE: 'BIDE', SIDR: 'BIDE', SILE: 'BIDE', SILR: 'BILD',
+  BTDE: 'STDE', BTDR: 'STLR', BTLE: 'STDE', BTLR: 'STLR',
+  BIDE: 'BIDE', BIDR: 'BILD', BILE: 'BIDE', BILD: 'BILD'
+};
+
+let current = 0;
+let answers = [];
+let resultCode = '';
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startQuiz() {
+  current = 0;
+  answers = [];
+  showScreen('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[current];
+  document.getElementById('q-progress').textContent = `${current + 1} / 4`;
+  document.getElementById('progress-fill').style.width = `${(current / 4) * 100}%`;
+  document.getElementById('q-dimension').textContent = q.dimension;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('opt-a-text').textContent = q.a.text;
+  document.getElementById('opt-b-text').textContent = q.b.text;
+  document.getElementById('opt-a').className = 'opt-btn';
+  document.getElementById('opt-b').className = 'opt-btn';
+  document.getElementById('opt-a').disabled = false;
+  document.getElementById('opt-b').disabled = false;
+}
+
+function answer(choice) {
+  const q = questions[current];
+  const key = choice === 'A' ? q.a.key : q.b.key;
+  answers.push(key);
+
+  document.getElementById('opt-a').disabled = true;
+  document.getElementById('opt-b').disabled = true;
+  document.getElementById(`opt-${choice.toLowerCase()}`).className = `opt-btn selected-${choice}`;
+
+  setTimeout(() => {
+    current++;
+    if (current < questions.length) {
+      renderQuestion();
+    } else {
+      showLoading();
+    }
+  }, 500);
+}
+
+const loadingMessages = [
+  ['📊 正在通过 AI 测算你的账户余额...', '请稍候，系统正在分析<br>你亏损的深层次原因'],
+  ['🔮 正在连接你的证券账户...', '获取资产负债表中，<br>资产那栏可能有点短'],
+  ['🧠 AI 正在深度共情你的处境...', '理解你的痛苦需要一点时间<br>但不会太长，你亏得很有规律'],
+];
+
+function showLoading() {
+  const msg = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+  document.getElementById('loading-text').textContent = msg[0];
+  document.getElementById('loading-sub').innerHTML = msg[1];
+  showScreen('loading');
+
+  setTimeout(() => {
+    computeResult();
+    showResult();
+  }, 2000);
+}
+
+function computeResult() {
+  const raw = answers.join('');
+  resultCode = typeMap[raw] || 'STDE';
+}
+
+function showResult() {
+  const r = results[resultCode];
+  showScreen('result');
+
+  // Animate letters
+  const letters = resultCode.split('');
+  let html = '';
+  letters.forEach((l, i) => {
+    html += `<span class="letter-animate" style="animation-delay:${i * 0.12}s">${l}</span>`;
+  });
+  document.getElementById('result-type').innerHTML = html;
+  document.getElementById('result-title').textContent = r.title;
+  document.getElementById('result-comment').textContent = r.comment;
+
+  // Stats
+  const statsEl = document.getElementById('result-stats');
+  statsEl.innerHTML = r.stats.map(s => `
+    <div class="r-stat">
+      <div class="r-stat-label">${s.label}</div>
+      <div class="r-stat-val ${s.cls}">${s.val}</div>
+    </div>
+  `).join('');
+
+  // Fill progress to 100%
+  document.getElementById('progress-fill').style.width = '100%';
+}
+
+function restart() {
+  showScreen('home');
+}
+
+function shareResult() {
+  if (navigator.share) {
+    navigator.share({
+      title: 'SBTI 炒股人格测试',
+      text: `我的炒股人格是 ${resultCode}！快来测测你是哪种炒股人？`,
+      url: window.location.href
+    });
+  } else {
+    alert('📋 请截图后分享给朋友！');
+  }
+}
+</script>
+
+
+</body></html>
