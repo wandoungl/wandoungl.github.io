@@ -1,20 +1,591 @@
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>设计</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <div class="wall__scroller" id="wall-scroller" aria-hidden="true">
-      <div class="wall__space"></div>
+<!DOCTYPE html>
+<!-- saved from url=(0051)file:///Users/guilinniu/Downloads/sbti-landing.html -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SBTI™ — 炒股人格研究院</title>
+<link href="./SBTI™ — 炒股人格研究院_files/css2" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #05050a;
+  --green: #00ff88;
+  --red: #ff3355;
+  --yellow: #ffd700;
+  --cyan: #00d4ff;
+  --text: #e8e8f0;
+  --muted: #5a5a72;
+  --card: #0f0f18;
+  --border: #1e1e30;
+}
+
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans SC', sans-serif;
+  cursor: crosshair;
+}
+
+/* ── CANVAS BG ── */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── NOISE OVERLAY ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── HERO SECTION ── */
+.hero {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+/* Top nav bar */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 32px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  backdrop-filter: blur(20px);
+  background: rgba(5,5,10,0.7);
+}
+.nav-logo {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: 3px;
+}
+.nav-right {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+.nav-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  margin-right: 6px;
+  animation: blink-dot 2s ease-in-out infinite;
+}
+@keyframes blink-dot {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+/* ── LIVE TICKER ── */
+.live-ticker {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 10;
+  background: rgba(5,5,10,0.85);
+  border-top: 1px solid var(--border);
+  padding: 8px 0;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+.ticker-track {
+  display: flex;
+  white-space: nowrap;
+  animation: scroll-ticker 30s linear infinite;
+}
+.ticker-track:hover { animation-play-state: paused; }
+.ticker-item {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  padding: 0 32px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.t-up { color: var(--green); }
+.t-down { color: var(--red); }
+@keyframes scroll-ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ── HERO CONTENT ── */
+.hero-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 4px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: reveal 0.8s ease 0.3s forwards;
+}
+
+.hero-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(52px, 14vw, 100px);
+  font-weight: 900;
+  line-height: 1.0;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: reveal 0.9s cubic-bezier(0.16,1,0.3,1) 0.5s forwards;
+}
+.hero-title .line1 {
+  display: block;
+  background: linear-gradient(90deg, #fff 0%, rgba(255,255,255,0.6) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-title .line2 {
+  display: block;
+  background: linear-gradient(90deg, var(--green), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 30px rgba(0,255,136,0.3));
+}
+
+.hero-sbti {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(18px, 5vw, 32px);
+  font-weight: 700;
+  letter-spacing: 8px;
+  color: rgba(255,255,255,0.12);
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: reveal 0.8s ease 0.7s forwards;
+}
+.hero-sbti span { transition: color 0.3s; }
+.hero-sbti span:hover { color: var(--yellow); }
+
+.hero-desc {
+  max-width: 380px;
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--muted);
+  margin: 0 auto 48px;
+  opacity: 0;
+  animation: reveal 0.8s ease 0.9s forwards;
+}
+.hero-desc strong { color: var(--text); font-weight: 700; }
+
+/* ── CTA BUTTON ── */
+.cta-wrap {
+  opacity: 0;
+  animation: reveal 0.8s ease 1.1s forwards;
+}
+.cta-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 40px;
+  background: var(--green);
+  color: #000;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+  box-shadow: 0 0 0 0 rgba(0,255,136,0.4);
+}
+.cta-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.cta-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 40px rgba(0,255,136,0.5);
+}
+.cta-btn:hover::before { opacity: 1; }
+.cta-btn:active { transform: scale(0.97); }
+.cta-arrow {
+  font-size: 18px;
+  transition: transform 0.3s;
+}
+.cta-btn:hover .cta-arrow { transform: translateX(4px); }
+
+.cta-note {
+  margin-top: 14px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ── FEATURES STRIP ── */
+.features {
+  position: relative;
+  z-index: 2;
+  padding: 60px 24px 100px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.features-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 3px;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.feat-item {
+  background: var(--card);
+  padding: 28px 24px;
+  transition: background 0.3s;
+}
+.feat-item:hover { background: #141420; }
+.feat-icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+.feat-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.feat-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ── TYPE PREVIEW ── */
+.type-preview {
+  position: relative;
+  z-index: 2;
+  padding: 0 24px 120px;
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+.section-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 3px;
+  margin-bottom: 32px;
+}
+.type-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+.type-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 16px;
+  text-align: left;
+  transition: all 0.3s;
+  cursor: default;
+}
+.type-card:hover {
+  border-color: rgba(0,255,136,0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+.type-code {
+  font-family: 'Space Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 6px;
+  letter-spacing: 2px;
+}
+.type-name {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.type-card:nth-child(2) .type-code { color: var(--cyan); }
+.type-card:nth-child(3) .type-code { color: var(--yellow); }
+.type-card:nth-child(4) .type-code { color: var(--red); }
+
+/* ── BIG CTA BOTTOM ── */
+.bottom-cta {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 0 24px 140px;
+}
+.bottom-cta-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(28px, 8vw, 48px);
+  font-weight: 900;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #fff, var(--muted));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── TRANSITION OVERLAY ── */
+#transition {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: var(--green);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  pointer-events: none;
+}
+#transition.go {
+  animation: wipe-in 0.6s cubic-bezier(0.76,0,0.24,1) forwards;
+}
+@keyframes wipe-in {
+  0%   { transform: scaleY(0); transform-origin: bottom; }
+  50%  { transform: scaleY(1); transform-origin: bottom; }
+  51%  { transform: scaleY(1); transform-origin: top; }
+  100% { transform: scaleY(0); transform-origin: top; }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .nav { padding: 14px 20px; }
+  .feat-grid { grid-template-columns: 1fr 1fr; }
+  .type-cards { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas" width="1710" height="895"></canvas>
+<div id="transition"></div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">SBTI™</div>
+  <div class="nav-right">
+    <span class="nav-dot"></span>
+    系统运行中
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Stock Behavior Type Indicator · 2025</div>
+  <h1 class="hero-title">
+    <span class="line1">炒股</span>
+    <span class="line2">人格研究院</span>
+  </h1>
+  <div class="hero-sbti">
+    <span>S</span><span>B</span><span>T</span><span>I</span>
+  </div>
+  <p class="hero-desc">
+    你以为你在炒股，其实股市在<strong>炒你</strong>。<br>
+    4道灵魂拷问，16种人格类型，<br>
+    一次彻底看清自己的机会。
+  </p>
+  <div class="cta-wrap">
+    <button class="cta-btn" onclick="enterGame()">
+      开始免费测试
+      <span class="cta-arrow">→</span>
+    </button>
+    <div class="cta-note">约 1 分钟完成 · 纯属娱乐 · 亏损自负</div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="features-label">— 测什么 —</div>
+  <div class="feat-grid">
+    <div class="feat-item">
+      <div class="feat-icon">⚡</div>
+      <div class="feat-title">决策风格</div>
+      <div class="feat-desc">梭哈全仓 or 逢低补仓，你的血液里流的是什么？</div>
     </div>
-    <main class="wall" aria-label="由设计二字铺满的页面">
-      <div class="wall__camera">
-        <div class="wall__plane" id="wall-plane" aria-hidden="true"></div>
-      </div>
-    </main>
-    <script src="script.js"></script>
-  </body>
-</html>
+    <div class="feat-item">
+      <div class="feat-icon">📡</div>
+      <div class="feat-title">选股依据</div>
+      <div class="feat-desc">听群里消息还是自己画K线，信仰决定命运。</div>
+    </div>
+    <div class="feat-item">
+      <div class="feat-icon">⏳</div>
+      <div class="feat-title">持仓周期</div>
+      <div class="feat-desc">今天买明天卖，还是套10年等解套？</div>
+    </div>
+    <div class="feat-item">
+      <div class="feat-icon">🧠</div>
+      <div class="feat-title">情绪管理</div>
+      <div class="feat-desc">看到妖股涨停你的反应，暴露了你的人性弱点。</div>
+    </div>
+  </div>
+</section>
+
+<!-- TYPE PREVIEW -->
+<section class="type-preview">
+  <div class="section-label">— 你会是哪种人格？—</div>
+  <div class="type-cards">
+    <div class="type-card">
+      <div class="type-code">STDE</div>
+      <div class="type-name">被收割的<br>究极绿韭菜 🌿</div>
+    </div>
+    <div class="type-card">
+      <div class="type-code">BILD</div>
+      <div class="type-name">华尔街<br>冷面佛 🧘</div>
+    </div>
+    <div class="type-card">
+      <div class="type-code">STLR</div>
+      <div class="type-name">被迫价值投资<br>套牢大户 😭</div>
+    </div>
+    <div class="type-card">
+      <div class="type-code">BIDE</div>
+      <div class="type-name">永远在回本路上<br>的波段海王 🌊</div>
+    </div>
+  </div>
+</section>
+
+<!-- BOTTOM CTA -->
+<section class="bottom-cta">
+  <div class="bottom-cta-title">你的人格，<br>等你来认领</div>
+  <div class="cta-wrap" style="opacity:1;animation:none">
+    <button class="cta-btn" onclick="enterGame()">
+      立刻测试
+      <span class="cta-arrow">→</span>
+    </button>
+    <div class="cta-note">* 本测试纯属娱乐，不构成任何投资建议</div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="live-ticker">
+  <div class="ticker-track" id="ticker"><span class="ticker-item">沪指 <span class="t-down">-2.31%</span></span><span class="ticker-item">深成指 <span class="t-up">+1.07%</span></span><span class="ticker-item">茅台 <span class="t-up">+5.88%</span></span><span class="ticker-item">比亚迪 <span class="t-up">+1.22%</span></span><span class="ticker-item">宁德时代 <span class="t-down">-3.41%</span></span><span class="ticker-item">你的持仓 <span class="t-down">-13.57%</span></span><span class="ticker-item">你的信心 <span class="t-down">-99.99%</span></span><span class="ticker-item">隔壁老王 <span class="t-up">+30%</span></span><span class="ticker-item">你的本金 <span class="t-down">-50%</span></span><span class="ticker-item">回本希望 <span class="t-down">-∞%</span></span><span class="ticker-item">主力资金 <span class="t-up">+999%</span></span><span class="ticker-item">割韭菜效率 <span class="t-up">历史新高</span></span><span class="ticker-item">沪指 <span class="t-down">-2.31%</span></span><span class="ticker-item">深成指 <span class="t-up">+1.07%</span></span><span class="ticker-item">茅台 <span class="t-up">+5.88%</span></span><span class="ticker-item">比亚迪 <span class="t-up">+1.22%</span></span><span class="ticker-item">宁德时代 <span class="t-down">-3.41%</span></span><span class="ticker-item">你的持仓 <span class="t-down">-13.57%</span></span><span class="ticker-item">你的信心 <span class="t-down">-99.99%</span></span><span class="ticker-item">隔壁老王 <span class="t-up">+30%</span></span><span class="ticker-item">你的本金 <span class="t-down">-50%</span></span><span class="ticker-item">回本希望 <span class="t-down">-∞%</span></span><span class="ticker-item">主力资金 <span class="t-up">+999%</span></span><span class="ticker-item">割韭菜效率 <span class="t-up">历史新高</span></span></div>
+</div>
+
+<script>
+// ── TICKER DATA ──
+const tickers = [
+  ['沪指', '-2.31%', false],
+  ['深成指', '+1.07%', true],
+  ['茅台', '+5.88%', true],
+  ['比亚迪', '+1.22%', true],
+  ['宁德时代', '-3.41%', false],
+  ['你的持仓', '-13.57%', false],
+  ['你的信心', '-99.99%', false],
+  ['隔壁老王', '+30%', true],
+  ['你的本金', '-50%', false],
+  ['回本希望', '-∞%', false],
+  ['主力资金', '+999%', true],
+  ['割韭菜效率', '历史新高', true],
+];
+const track = document.getElementById('ticker');
+let html = '';
+// Duplicate for seamless loop
+[...tickers, ...tickers].forEach(([name, val, up]) => {
+  html += `<span class="ticker-item">${name} <span class="${up ? 't-up' : 't-down'}">${val}</span></span>`;
+});
+track.innerHTML = html;
+
+// ── CANVAS ANIMATION — falling stock numbers ──
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const chars = '0123456789▲▼+-%.涨跌套牢割肉梭哈';
+const cols = [];
+const colCount = Math.floor(window.innerWidth / 28);
+
+for (let i = 0; i < colCount; i++) {
+  cols.push({
+    x: i * 28 + 14,
+    y: Math.random() * -500,
+    speed: 0.4 + Math.random() * 0.8,
+    opacity: 0.03 + Math.random() * 0.05,
+    char: chars[Math.floor(Math.random() * chars.length)],
+    color: Math.random() > 0.5 ? '#00ff88' : '#ff3355',
+    size: 10 + Math.random() * 4
+  });
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  cols.forEach(col => {
+    ctx.save();
+    ctx.globalAlpha = col.opacity;
+    ctx.fillStyle = col.color;
+    ctx.font = `${col.size}px 'Space Mono', monospace`;
+    ctx.textAlign = 'center';
+    ctx.fillText(col.char, col.x, col.y);
+    ctx.restore();
+
+    col.y += col.speed;
+    if (Math.random() < 0.02) col.char = chars[Math.floor(Math.random() * chars.length)];
+    if (col.y > canvas.height + 20) {
+      col.y = -20;
+      col.x = Math.floor(Math.random() * (canvas.width / 28)) * 28 + 14;
+    }
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
+// ── TRANSITION TO GAME ──
+function enterGame() {
+  const overlay = document.getElementById('transition');
+  overlay.classList.add('go');
+  setTimeout(() => {
+    window.location.href = 'sbti-test.html';
+  }, 300);
+}
+</script>
+
+
+</body></html>
